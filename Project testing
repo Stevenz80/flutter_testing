@@ -1,0 +1,102 @@
+ import 'package:flutter/material.dart';
+
+ void main() => runApp(MyApp());
+
+ class MyApp extends StatefulWidget {
+   @override
+   _MyAppState createState() => _MyAppState();
+ }
+
+class _MyAppState extends State<MyApp> {
+  String _question = '';
+  int _yesVotes = 0;
+  int _noVotes = 0;
+  final _questionRegex = RegExp(r'^(?:what|when|where|why|how|is|are|do|does|did|can|could|should|will|would)');
+
+  void _showErrorDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Error'),
+          content: Text('Please enter a valid question'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Voting App'),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextField(
+                decoration: InputDecoration(
+                  hintText: 'Enter a question',
+                ),
+                onChanged: (value) {
+                  setState(() {
+                    if (_questionRegex.hasMatch(value)) {
+                      _question = value;
+                    }
+                    if (value.isEmpty) {
+                      _yesVotes = 0;
+                      _noVotes = 0;
+                    }
+                  });
+                },
+             ),
+              SizedBox(height: 16.0),
+              Text(_question),
+              SizedBox(height: 16.0),
+              Row(
+               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TextButton(
+                    onPressed: _question.isEmpty || !_questionRegex.hasMatch(_question)
+                        ? () => _showErrorDialog()
+                        : () {
+                            setState(() {
+                              _yesVotes++;
+                            });
+                         },
+                    child: Text('Yes'),
+                  ),
+                 TextButton(
+                    onPressed: _question.isEmpty || !_questionRegex.hasMatch(_question)
+                        ? () => _showErrorDialog()
+                        : () {
+                            setState(() {
+                              _noVotes++;
+                            });
+                         },
+                      child: Text('No'),
+                    ),
+                ],
+              ),
+              SizedBox(height: 16.0),
+              Text('Yes votes: $_yesVotes'),
+              SizedBox(height: 8.0),
+              Text('No votes: $_noVotes'),
+            ],
+          ),
+        ),
+      ),
+     );
+   }
+ }
